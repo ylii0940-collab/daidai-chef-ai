@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: daidai-backend
+    command: uvicorn app_server:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./resources:/app/resources
+      - ./data:/app/data
+    env_file:
+      - .env
+    restart: always
+
+  frontend:
+    build: .
+    container_name: daidai-frontend
+    command: streamlit run streamlit_app.py --server.port=8501 --server.address=0.0.0.0
+    ports:
+      - "8501:8501"
+    environment:
+      - API_BASE_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: always

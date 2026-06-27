@@ -1,0 +1,43 @@
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.DS_Store
+
+.venv/
+venv/
+
+*.log
+
+resources/chroma_db/
+
+.idea/
+*.db
+pack_01/
+resources/*.db
+pytest.py
+pytest2.py
+
+# runtime database files
+*.db
+*.db-shm
+*.db-wal
+resources/*.db
+resources/*.db-shm
+resources/*.db-wal
+resources/chroma_db/
+
+# large data files
+data/usa_election.txt
+
+# local IDE files
+.idea/
+
+# test / temporary files
+pytest.py
+pytest2.py
+pack_01/
