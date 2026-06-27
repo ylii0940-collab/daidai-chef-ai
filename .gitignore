@@ -41,3 +41,11 @@ data/usa_election.txt
 pytest.py
 pytest2.py
 pack_01/
+
+# LangGraph runtime cache
+.langgraph_api/
+
+# database / cache files
+*.sqlite
+*.pckl
+*.pkl
