@@ -50,3 +50,7 @@ pack_01/
 *.pckl
 *.pkl
 data/testData.xlsx
+
+# Only keep recipe data for this project
+data/*
+!data/recipes.json
