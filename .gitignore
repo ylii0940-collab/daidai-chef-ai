@@ -49,3 +49,4 @@ pack_01/
 *.sqlite
 *.pckl
 *.pkl
+data/testData.xlsx
