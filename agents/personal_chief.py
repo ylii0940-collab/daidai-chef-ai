@@ -86,8 +86,8 @@ model = ChatOpenAI(
     openai_api_key=_API_KEY,
     openai_api_base=_BASE_URL,
     http_client=_chat_client,
-    timeout=15.0,  # 缩短超时时间为 15 秒，快速反馈异常
-    max_retries=1,
+    timeout=60.0,  # 增大超时时间，防止生成长篇菜谱时超时
+    max_retries=2,
 )
 
 # Embeddings model for ChromaDB query
@@ -189,7 +189,10 @@ def retrieve_recipes(query_str: str, top_k: int = 10) -> List[dict]:
                 "model": "text-embedding-v2",
                 "input": ["test"]
             }
-            with httpx.Client(verify=False, trust_env=False, timeout=1.5) as check_client:
+            is_sandbox = "ANTIGRAVITY_AGENT" in os.environ
+            check_verify = not is_sandbox
+            check_trust_env = not is_sandbox
+            with httpx.Client(verify=check_verify, trust_env=check_trust_env, timeout=5.0) as check_client:
                 res = check_client.post(
                     "https://dashscope.aliyuncs.com/compatible-mode/v1/embeddings",
                     headers=headers,
