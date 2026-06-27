@@ -11,7 +11,7 @@
 *   **前端展示层 (Client)**: 基于 **Streamlit** 构建。作为轻量级交互客户端，负责图片上传、偏好配置、历史会话切换及渲染格式化后的菜谱推荐卡片。
 *   **后端服务层 (Server)**: 基于 **FastAPI** 搭建 REST APIs，统一管理多轮对话状态及各类算法计算。
 *   **向量检索层 (RAG)**: 使用 **ChromaDB** 作为本地持久化向量数据库（存储于 `resources/chroma_db`），使用阿里云的 `text-embedding-v2` 对菜谱进行嵌入和余弦相似度检索。
-*   **智能体引擎 (Agent Engine)**: 使用 **LangGraph** 构建多智能体状态机（Planner/Executor/Direct Chat），通过自定义节点实现意图识别与工作流流转。
+*   **工作流引擎 (Workflow Engine)**: 使用 **LangGraph** 构建状态机式工作流（Planner/Executor/Direct Chat），通过自定义节点实现意图识别与业务逻辑流转。
 *   **数据持久化 (Persistence)**: 基于 **SQLite** 实现状态机 Checkpoint 存储，提供跨会话的多轮记忆持久化。
 *   **大语言模型 (LLMs)**: 使用阿里云百炼平台的 `qwen-vl-plus` 多模态模型进行视觉食材分析，并使用其兼容 OpenAI 规范的 API 完成核心 Agent 工作流。
 
@@ -30,7 +30,7 @@
 ```
 
 ### 2. 本地向量数据库检索 (RAG)
-系统放弃了简单的关键词匹配，将 100+ 道本地精选菜谱的文本特征编码为 1536 维的密集向量导入 ChromaDB。检索阶段将用户输入的食材列表和个性化诉求作为 Query 向量化，在向量空间中召回 Top-10 语义最接近的候选菜谱。
+系统放弃了简单的关键词匹配，将本地菜谱的文本特征编码为高维密集向量并导入 ChromaDB。检索阶段将用户输入的食材列表和个性化诉求作为 Query 向量化，在向量空间中召回 Top-10 语义最接近的候选菜谱。
 
 ### 3. 多维度重排算法 (Reranker)
 系统使用纯 Python 编写的轻量重排算法，结合用户偏好规则对 RAG 召回的候选集进行微观排序，**总分计算公式**如下：
@@ -43,7 +43,7 @@ $$\text{总分} = \text{食材匹配度} \times 0.4 + \text{营养均衡度} \ti
     *   **烹饪器具约束**: 若菜谱所需器具不在用户可用清单内，直接予以剔除。
     *   **时间上限约束**: 剔除烹饪耗时超出用户时间限制的菜谱。
 
-### 4. 多智能体状态机流转 (LangGraph)
+### 4. 状态机式工作流流转 (LangGraph)
 系统内部运行的工作流如下：
 1.  **Planner Node (规划节点)**: 接收用户输入，分析当前意图是“要求推荐/提供新食材”（流转至 `Executor`）还是“针对已有菜谱追问/普通闲聊”（流转至 `Direct Chat`）。
 2.  **Executor Node (执行推荐节点)**: 调度 ChromaDB 进行向量召回，随后运行 Reranker 计算综合评分，最后由大模型对 Top-3 菜谱进行烹饪步骤与营养成分的细节微调并输出 JSON。
@@ -84,7 +84,6 @@ daidai/
 在项目根目录下创建 `.env` 文件，配置您的 API 凭证：
 ```env
 DASHSCOPE_API_KEY="您的阿里云百炼 API Key"
-TAVILY_API_KEY="您的 Tavily Search API Key"
 DASHSCOPE_BASE_URL="https://dashscope.aliyuncs.com/compatible-mode/v1"
 ```
 
