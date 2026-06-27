@@ -74,11 +74,9 @@ if "ANTIGRAVITY_AGENT" in os.environ:
     _chat_client = httpx.Client(verify=False, trust_env=False)
     _embeddings_client = httpx.Client(verify=False, trust_env=False)
 else:
-    # 用户本地机器：使用默认设置，自动读取系统的 VPN 代理配置。
-    # 请让用户在 VPN 客户端（如 Clash/V2ray）中切换为“规则分流模式”（Rule Mode），
-    # 这样系统会自动将对 dashscope.aliyuncs.com（国内域名）的请求走 DIRECT 直连，而对国际服务的请求走代理，两全其美！
-    _chat_client = httpx.Client(verify=True)
-    _embeddings_client = httpx.Client(verify=True)
+    # 用户本地机器：强行禁用系统代理读取 (trust_env=False)，从而绕过任何本地 VPN 代理拦截，实现直接连接国内阿里云百炼。
+    _chat_client = httpx.Client(verify=True, trust_env=False)
+    _embeddings_client = httpx.Client(verify=True, trust_env=False)
 
 # 主 LLM (Qwen-VL-Plus 多模态模型)
 model = ChatOpenAI(
