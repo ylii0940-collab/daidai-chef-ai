@@ -21,6 +21,8 @@ pack_01/
 resources/*.db
 pytest.py
 pytest2.py
+01.py
+packages(1).csv
 
 # runtime database files
 *.db
